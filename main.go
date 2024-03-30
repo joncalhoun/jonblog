@@ -1,11 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 )
 
 func main() {
@@ -47,6 +51,36 @@ func PostHandler(sl SlugReader) http.HandlerFunc {
 			http.Error(w, "Post not found", http.StatusNotFound)
 			return
 		}
-		fmt.Fprint(w, postMarkdown)
+		mdRenderer := goldmark.New(
+			goldmark.WithExtensions(
+				highlighting.NewHighlighting(
+					highlighting.WithStyle("dracula"),
+				),
+			),
+		)
+		var buf bytes.Buffer
+		err = mdRenderer.Convert([]byte(postMarkdown), &buf)
+		if err != nil {
+			http.Error(w, "Error converting markdown", http.StatusInternalServerError)
+			return
+		}
+		// TODO: Parse the template once, not every page load.
+		tpl, err := template.ParseFiles("post.gohtml")
+		if err != nil {
+			http.Error(w, "Error parsing template", http.StatusInternalServerError)
+			return
+		}
+		// TODO: Stop hardcoding post data. Parse from frontmatter.
+		err = tpl.Execute(w, PostData{
+			Title:   "My First Post",
+			Content: template.HTML(buf.String()),
+			Author:  "Jon Calhoun",
+		})
 	}
+}
+
+type PostData struct {
+	Title   string
+	Content template.HTML
+	Author  string
 }

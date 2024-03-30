@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <title>{{.Title}} | Jon's Blog</title>
+</head>
+<body>
+  <nav class="flex items-center justify-between bg-gray-800 p-6 mb-4">
+    <div class="flex items-center flex-shrink-0 text-white mr-6">
+      <span class="font-semibold text-xl tracking-tight">Jon's Blog</span>
+    </div>
+    <div class="block">
+      <ul class="flex space-x-4">
+        <li><a href="#" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
+        <li><a href="#" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">About</a></li>
+        <li><a href="#" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li>
+        <li><a href="#" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container mx-auto">
+    <h1 class="text-4xl font-bold text-center">{{.Title}}</h1>
+    <div class="text-center mt-4">
+      <p class="text-gray-500">Author: {{.Author}}</p>
+    </div>
+    <div class="prose max-w-full">
+      {{.Content}}
+    </div>
+  </div>
+</body>
+</html>
