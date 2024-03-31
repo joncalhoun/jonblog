@@ -46,6 +46,12 @@ func PostHandler(sl SlugReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
 		postMarkdown, err := sl.Read(slug)
+		if err != nil {
+			// TODO: Handle different errors in the future
+			http.Error(w, "Post not found", http.StatusNotFound)
+			return
+		}
+
 		mdRenderer := goldmark.New(
 			goldmark.WithExtensions(
 				highlighting.NewHighlighting(
@@ -57,11 +63,6 @@ func PostHandler(sl SlugReader) http.HandlerFunc {
 		err = mdRenderer.Convert([]byte(postMarkdown), &buf)
 		if err != nil {
 			http.Error(w, "Error converting markdown", http.StatusInternalServerError)
-			return
-		}
-		if err != nil {
-			// TODO: Handle different errors in the future
-			http.Error(w, "Post not found", http.StatusNotFound)
 			return
 		}
 		// TODO: Parse the template once, not every page load.
