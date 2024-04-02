@@ -1,4 +1,14 @@
-# Building a Blog in Go: Rendering Markdown
++++
+title = "Building a Blog in Go: Rendering Markdown as HTML"
+description = "Now that my blog can render plaintext markdown, I was ready to start converting the markdown into HTML and rendering it nicely. The first step was to find a markdown processing library and start using it. After that I added code syntax highlighting, and finished up with an HTML template so I could render a navbar and other common elements on every page that shows a blog post."
+date = 2024-03-25
+
+[author]
+name = "Jon Calhoun"
+email = "jon@calhoun.io"
++++
+
+# Building a Blog in Go: Rendering Markdown as HTML
 
 ## Converting Markdown to HTML
 

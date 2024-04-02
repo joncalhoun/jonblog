@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/adrg/frontmatter"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 )
@@ -44,11 +46,17 @@ func (fsr FileReader) Read(slug string) (string, error) {
 
 func PostHandler(sl SlugReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		slug := r.PathValue("slug")
-		postMarkdown, err := sl.Read(slug)
+		var post Post
+		post.Slug = r.PathValue("slug")
+		postMarkdown, err := sl.Read(post.Slug)
 		if err != nil {
 			// TODO: Handle different errors in the future
 			http.Error(w, "Post not found", http.StatusNotFound)
+			return
+		}
+		rest, err := frontmatter.Parse(strings.NewReader(postMarkdown), &post)
+		if err != nil {
+			http.Error(w, "Error parsing frontmatter", http.StatusInternalServerError)
 			return
 		}
 		mdRenderer := goldmark.New(
@@ -59,7 +67,7 @@ func PostHandler(sl SlugReader) http.HandlerFunc {
 			),
 		)
 		var buf bytes.Buffer
-		err = mdRenderer.Convert([]byte(postMarkdown), &buf)
+		err = mdRenderer.Convert(rest, &buf)
 		if err != nil {
 			http.Error(w, "Error converting markdown", http.StatusInternalServerError)
 			return
@@ -70,17 +78,25 @@ func PostHandler(sl SlugReader) http.HandlerFunc {
 			http.Error(w, "Error parsing template", http.StatusInternalServerError)
 			return
 		}
-		// TODO: Stop hardcoding post data. Parse from frontmatter.
-		err = tpl.Execute(w, PostData{
-			Title:   "My First Post",
-			Content: template.HTML(buf.String()),
-			Author:  "Jon Calhoun",
-		})
+		post.Content = template.HTML(buf.String())
+		err = tpl.Execute(w, post)
 	}
 }
 
-type PostData struct {
-	Title   string
+type Post struct {
+	Title   string `toml:"title"`
+	Slug    string `toml:"slug"`
 	Content template.HTML
-	Author  string
+	Author  Author `toml:"author"`
 }
+
+type Author struct {
+	Name  string `toml:"name"`
+	Email string `toml:"email"`
+}
+
+// type PostData struct {
+// 	Title   string
+// 	Content template.HTML
+// 	Author  string
+// }

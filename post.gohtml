@@ -22,9 +22,11 @@
   </nav>
   <div class="container mx-auto">
     <h1 class="text-4xl font-bold text-center">{{.Title}}</h1>
+    {{with .Author}}
     <div class="text-center mt-4">
-      <p class="text-gray-500">Author: {{.Author}}</p>
+      <p class="text-gray-500">Author: <a href="mailto:{{.Email}}">{{.Name}}</a></p>
     </div>
+    {{end}}
     <div class="prose max-w-full">
       {{.Content}}
     </div>

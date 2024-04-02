@@ -1,4 +1,12 @@
-# How to boil eggs
++++
+title = "How to Boil Eggs"
+description = "Learn how to quickly and easily boil 6 eggs!"
+date = 2024-03-03
+
+[author]
+name = "Jon Calhoun"
+email = "jon@calhoun.io"
++++
 
 Ingredients: 6 eggs
 
